@@ -1,11 +1,11 @@
 package com.stephenluce.bezier;
-import java.lang.Math;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
-public class Bezier3 {
+public class BezierUtils {
 
 	// A real-cube-roots-only function:
 	static double cuberoot(double v) {
@@ -17,6 +17,7 @@ public class Bezier3 {
 
 	/**
 	 * filters, sorts and removes duplicates
+	 * 
 	 * @param d input list of doubles
 	 * @return filtered sorted output
 	 */
@@ -29,10 +30,10 @@ public class Bezier3 {
 		}
 		return new ArrayList<Double>(set);
 	}
-		
+
 	static double castlejau(double u, double a, double b, double c, double d) {
 		double v = 1 - u;
-		
+
 		double ab = a * v + b * u;
 		double bc = b * v + c * u;
 		double cd = c * v + d * u;
@@ -41,16 +42,16 @@ public class Bezier3 {
 		double bcd = bc * v + cd * u;
 
 		double abcd = abc * v + bcd * u;
-		
+
 		return abcd;
 	}
-	
+
 	/**
 	 * 
 	 * @param d any number of double arguments
 	 * @return The arguments as a double[]
 	 */
-	static double[] doubles(double...d) {
+	static double[] doubles(double... d) {
 		return d;
 	}
 
@@ -61,7 +62,7 @@ public class Bezier3 {
 	 */
 	static double[][] split(double u, double a, double b, double c, double d) {
 		double v = 1 - u;
-		
+
 		double ab = a * v + b * u;
 		double bc = b * v + c * u;
 		double cd = c * v + d * u;
@@ -70,8 +71,13 @@ public class Bezier3 {
 		double bcd = bc * v + cd * u;
 
 		double abcd = abc * v + bcd * u;
-		
-		return new double[][] {doubles(a,ab,abc,abcd),doubles(abcd,bcd,cd,d)};
+
+		double[] first = { a, ab, abc, abcd };
+		double[] second = { abcd, bcd, cd, d };
+
+		double[][] splits = { first, second };
+
+		return splits;
 	}
 
 	// Now then: given cubic coordinates {pa, pb, pc, pd} find all roots.
@@ -169,14 +175,24 @@ public class Bezier3 {
 
 			t1(a, b, c, d);
 		}
-		
-		t1(-3,1,1,-3);
+
+		t1(-3, 1, 1, -3);
+		t1(-2, -2, +2, +2);
+		t1(-2, 2, -2, 2);
+		t1(-2, 4, -2, 4);
+		t1(-2, -2, 1, 1);
+		t1(-1, 0, 0, 5);
 	}
 
 	private static void t1(int a, int b, int c, int d) {
 		List<Double> cubicRoots = getCubicRoots(a, b, c, d);
+		System.out.printf("(%2d,%2d,%2d,%2d)\n", a, b, c, d);
+
+		for (double u = 0.0; u <= 1.0; u += 0.01) {
+			double x = castlejau(u, a, b, c, d);
+			System.out.printf("%.2f -> %+.6f\n", u, x);
+		}
 		System.out.printf("(%2d,%2d,%2d,%2d) = %s\n", a, b, c, d, cubicRoots);
 	}
 
-	
 }
